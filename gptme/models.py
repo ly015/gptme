@@ -32,7 +32,7 @@ class _ModelDictMeta(TypedDict):
 
 
 # available providers
-PROVIDERS = ["openai", "anthropic", "azure", "openrouter", "local"]
+PROVIDERS = ["openai", "anthropic", "azure", "openrouter", "local", "internlm"]
 
 # default model
 DEFAULT_MODEL: ModelMeta | None = None
@@ -40,6 +40,14 @@ DEFAULT_MODEL: ModelMeta | None = None
 # known models metadata
 # TODO: can we get this from the API?
 MODELS: dict[str, dict[str, _ModelDictMeta]] = {
+    "internlm": {
+        "internlm2.5-latest": {
+            "context": 32_000,
+            "max_output": 4096,
+            "price_input": 0.01,
+            "price_output": 0.01,
+        },
+    },
     "openai": OPENAI_MODELS,
     "anthropic": {
         "claude-3-opus-20240229": {
@@ -113,7 +121,9 @@ def get_model(model: str | None = None) -> ModelMeta:
 
 
 def get_recommended_model(provider: str) -> str:  # pragma: no cover
-    if provider == "openai":
+    if provider == "internlm":
+        return "internlm2.5-latest"
+    elif provider == "openai":
         return "gpt-4o"
     elif provider == "openrouter":
         return "meta-llama/llama-3.1-405b-instruct"
@@ -124,7 +134,9 @@ def get_recommended_model(provider: str) -> str:  # pragma: no cover
 
 
 def get_summary_model(provider: str) -> str:  # pragma: no cover
-    if provider == "openai":
+    if provider == "internlm":
+        return "internlm2.5-latest"
+    elif provider == "openai":
         return "gpt-4o-mini"
     elif provider == "openrouter":
         return "meta-llama/llama-3.1-8b-instruct"

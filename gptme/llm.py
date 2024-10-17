@@ -13,6 +13,10 @@ from .llm_anthropic import chat as chat_anthropic
 from .llm_anthropic import get_client as get_anthropic_client
 from .llm_anthropic import init as init_anthropic
 from .llm_anthropic import stream as stream_anthropic
+from .llm_internlm import chat as chat_internlm
+from .llm_internlm import get_client as get_internlm_client
+from .llm_internlm import init as init_internlm
+from .llm_internlm import stream as stream_internlm
 from .llm_openai import chat as chat_openai
 from .llm_openai import get_client as get_openai_client
 from .llm_openai import init as init_openai
@@ -37,6 +41,9 @@ def init_llm(llm: str):
     elif llm == "anthropic":
         init_anthropic(config)
         assert get_anthropic_client()
+    elif llm == "internlm":
+        init_internlm(llm, config)
+        assert get_internlm_client()
     else:
         print(f"Error: Unknown LLM: {llm}")
         sys.exit(1)
@@ -59,6 +66,8 @@ def _chat_complete(messages: list[Message], model: str) -> str:
         return chat_openai(messages, model)
     elif provider == "anthropic":
         return chat_anthropic(messages, model)
+    elif provider == "internlm":
+        return chat_internlm(messages, model)
     else:
         raise ValueError("LLM not initialized")
 
@@ -69,6 +78,8 @@ def _stream(messages: list[Message], model: str) -> Iterator[str]:
         return stream_openai(messages, model)
     elif provider == "anthropic":
         return stream_anthropic(messages, model)
+    elif provider == "internlm":
+        return stream_internlm(messages, model)
     else:
         raise ValueError("LLM not initialized")
 
@@ -108,8 +119,11 @@ def _reply_stream(messages: list[Message], model: str) -> Message:
 def _client_to_provider() -> Provider:
     openai_client = get_openai_client()
     anthropic_client = get_anthropic_client()
-    assert openai_client or anthropic_client, "No client initialized"
-    if openai_client:
+    internlm_client = get_internlm_client()
+    assert openai_client or anthropic_client or internlm_client, "No client initialized"
+    if internlm_client:
+        return "internlm"
+    elif openai_client:
         if "openai" in openai_client.base_url.host:
             return "openai"
         elif "openrouter" in openai_client.base_url.host:
