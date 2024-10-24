@@ -35,7 +35,10 @@ def init(model: str | None, interactive: bool, tool_allowlist: list[str] | None)
 
     if not model:  # pragma: no cover
         # auto-detect depending on if OPENAI_API_KEY or ANTHROPIC_API_KEY is set
-        if config.get_env("INTERNLM_API_TOKEN"):
+        if config.get_env("DEEPSEEK_API_KEY"):
+            console.log("Found DeepSeek API key, using DeepSeek provider")
+            model = "deepseek"
+        elif config.get_env("INTERNLM_API_TOKEN"):
             console.log("Found InternLM API key, using InternLM provider")
             model = "internlm"
         elif config.get_env("OPENAI_API_KEY"):

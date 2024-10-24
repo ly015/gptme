@@ -32,7 +32,15 @@ class _ModelDictMeta(TypedDict):
 
 
 # available providers
-PROVIDERS = ["openai", "anthropic", "azure", "openrouter", "local", "internlm"]
+PROVIDERS = [
+    "openai",
+    "anthropic",
+    "azure",
+    "openrouter",
+    "local",
+    "internlm",
+    "deepseek",
+]
 
 # default model
 DEFAULT_MODEL: ModelMeta | None = None
@@ -40,6 +48,14 @@ DEFAULT_MODEL: ModelMeta | None = None
 # known models metadata
 # TODO: can we get this from the API?
 MODELS: dict[str, dict[str, _ModelDictMeta]] = {
+    "deepseek": {
+        "deepseek-chat": {
+            "context": 128_000,
+            "max_output": 4096,
+            "price_input": 1,
+            "price_output": 2,
+        }
+    },
     "internlm": {
         "internlm2.5-latest": {
             "context": 32_000,
@@ -121,7 +137,9 @@ def get_model(model: str | None = None) -> ModelMeta:
 
 
 def get_recommended_model(provider: str) -> str:  # pragma: no cover
-    if provider == "internlm":
+    if provider == "deepseek":
+        return "deepseek-chat"
+    elif provider == "internlm":
         return "internlm2.5-latest"
     elif provider == "openai":
         return "gpt-4o"
@@ -134,7 +152,9 @@ def get_recommended_model(provider: str) -> str:  # pragma: no cover
 
 
 def get_summary_model(provider: str) -> str:  # pragma: no cover
-    if provider == "internlm":
+    if provider == "deepseek":
+        return "deepseek-chat"
+    elif provider == "internlm":
         return "internlm2.5-latest"
     elif provider == "openai":
         return "gpt-4o-mini"
